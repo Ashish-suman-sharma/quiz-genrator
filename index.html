@@ -40,8 +40,13 @@
           <h1>Ashish AI</h1>
         </div>
         <ul class="nav-links"></ul>
-        <div class="theme-toggle">
-          <i class="fas fa-moon"></i>
+        <div class="right-icons">
+          <div class="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </div>
+          <div class="terminal-toggle">
+            <i class="fas fa-terminal"></i>
+          </div>
         </div>
       </nav>
     </header>
@@ -248,6 +253,14 @@
       </section>
     </main>
 
+    <div id="terminal" class="terminal hidden">
+      <div class="terminal-header">
+        <span>Terminal</span>
+        <button id="close-terminal" class="close-btn">X</button>
+      </div>
+      <div id="terminal-output" class="terminal-output"></div>
+    </div>
+
     <!-- JavaScript Files -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/gemini-api.js"></script>
@@ -255,5 +268,17 @@
     <script src="js/storage.js"></script>
     <script src="js/quiz-ui.js"></script>
     <script src="js/app.js"></script>
+    <script>
+      document
+        .querySelector(".terminal-toggle")
+        .addEventListener("click", () => {
+          document.getElementById("terminal").classList.toggle("hidden");
+        });
+      document
+        .getElementById("close-terminal")
+        .addEventListener("click", () => {
+          document.getElementById("terminal").classList.add("hidden");
+        });
+    </script>
   </body>
 </html>

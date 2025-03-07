@@ -278,6 +278,7 @@ class QuizUI {
         
         html += `
             <textarea id="code-editor">${userCode || question.starterCode || '// Write your solution here'}</textarea>
+            <button id="run-code" class="btn-primary">Run Code</button>
         `;
         
         html += '</div>';
@@ -315,9 +316,109 @@ class QuizUI {
             editor.on('change', () => {
                 this.quizGenerator.submitAnswer(question.id - 1, editor.getValue());
             });
+
+            document.getElementById('run-code').addEventListener('click', () => {
+                this.runCodeInTerminal(editor.getValue());
+            });
         }, 0);
 
         return html;
+    }
+
+    runCodeInTerminal(code) {
+        const terminalOutput = document.getElementById('terminal-output');
+        terminalOutput.innerHTML = ''; // Clear previous output
+
+        // Override console methods to capture output
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info,
+        };
+
+        function appendToTerminal(text, type = "output") {
+            const outputElement = document.createElement("div");
+            outputElement.className = `terminal-${type}`;
+            outputElement.textContent = text;
+            terminalOutput.appendChild(outputElement);
+
+            // Auto scroll to bottom
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        console.log = function (...args) {
+            originalConsole.log(...args);
+            appendToTerminal(
+                args
+                    .map((arg) =>
+                        typeof arg === "object" ? JSON.stringify(arg, null, 2) : arg
+                    )
+                    .join(" ")
+            );
+        };
+
+        console.error = function (...args) {
+            originalConsole.error(...args);
+            appendToTerminal(
+                args
+                    .map((arg) =>
+                        typeof arg === "object" ? JSON.stringify(arg, null, 2) : arg
+                    )
+                    .join(" "),
+                "error"
+            );
+        };
+
+        console.warn = function (...args) {
+            originalConsole.warn(...args);
+            appendToTerminal(
+                args
+                    .map((arg) =>
+                        typeof arg === "object" ? JSON.stringify(arg, null, 2) : arg
+                    )
+                    .join(" "),
+                "output"
+            );
+        };
+
+        console.info = function (...args) {
+            originalConsole.info(...args);
+            appendToTerminal(
+                args
+                    .map((arg) =>
+                        typeof arg === "object" ? JSON.stringify(arg, null, 2) : arg
+                    )
+                    .join(" "),
+                "output"
+            );
+        };
+
+        try {
+            // Create a function to evaluate the code
+            const result = eval(code);
+
+            // If there's a return value and it's not undefined, display it
+            if (result !== undefined) {
+                appendToTerminal(
+                    `Result: ${
+                        typeof result === "object"
+                            ? JSON.stringify(result, null, 2)
+                            : result
+                    }`
+                );
+            }
+        } catch (error) {
+            appendToTerminal(`Error: ${error.message}`, "error");
+        } finally {
+            // Restore original console methods
+            console.log = originalConsole.log;
+            console.error = originalConsole.error;
+            console.warn = originalConsole.warn;
+            console.info = originalConsole.info;
+        }
+
+        document.getElementById('terminal').classList.remove('hidden');
     }
     
     /**
