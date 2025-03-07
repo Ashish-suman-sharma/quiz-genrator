@@ -276,15 +276,9 @@ class QuizUI {
     createCodingContent(question, userCode) {
         let html = '<div class="code-editor">';
         
-        if (question.starterCode) {
-            html += `
-                <textarea>${userCode || question.starterCode}</textarea>
-            `;
-        } else {
-            html += `
-                <textarea>${userCode || '// Write your solution here'}</textarea>
-            `;
-        }
+        html += `
+            <textarea id="code-editor">${userCode || question.starterCode || '// Write your solution here'}</textarea>
+        `;
         
         html += '</div>';
         
@@ -305,7 +299,24 @@ class QuizUI {
             
             html += '</ul></div>';
         }
-        
+
+        // Initialize CodeMirror after the content is added to the DOM
+        setTimeout(() => {
+            const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+                mode: 'javascript',
+                lineNumbers: true,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                indentUnit: 4,
+                tabSize: 4,
+                spellcheck: false
+            });
+
+            editor.on('change', () => {
+                this.quizGenerator.submitAnswer(question.id - 1, editor.getValue());
+            });
+        }, 0);
+
         return html;
     }
     
