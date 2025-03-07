@@ -1,0 +1,200 @@
+/* Animation Styles */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInFromRight {
+    from { 
+        transform: translateX(50px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromLeft {
+    from { 
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Applied Animations */
+#hero {
+    animation: fadeIn 1s ease-out;
+}
+
+.feature, .topic-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature:hover, .topic-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover, .btn-secondary:hover, .btn-success:hover {
+    animation: pulse 0.5s ease-in-out;
+}
+
+.incorrect-answer {
+    animation: shake 0.5s ease-in-out;
+}
+
+.score-text {
+    animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.option-item.selected {
+    animation: pulse 0.3s ease-in-out;
+}
+
+/* Question transition animations */
+.question-enter {
+    opacity: 0;
+    transform: translateX(50px);
+}
+
+.question-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.question-exit {
+    opacity: 1;
+}
+
+.question-exit-active {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 300ms, transform 300ms;
+}
+
+/* Quiz results animations */
+#results-container {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.results-summary {
+    animation: slideInFromBottom 0.6s ease-out 0.2s both;
+}
+
+.hero-image .code-snippet {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* AOS animations override */
+[data-aos] {
+    pointer-events: auto !important;
+}
+
+html:not(.no-js) [data-aos=fade-up] {
+    transform: translate3d(0, 20px, 0);
+}
+
+html:not(.no-js) [data-aos=fade-down] {
+    transform: translate3d(0, -20px, 0);
+}
+
+html:not(.no-js) [data-aos=fade-right] {
+    transform: translate3d(-20px, 0, 0);
+}
+
+html:not(.no-js) [data-aos=fade-left] {
+    transform: translate3d(20px, 0, 0);
+}
+
+html:not(.no-js) [data-aos=fade-up-right] {
+    transform: translate3d(-20px, 20px, 0);
+}
+
+html:not(.no-js) [data-aos=fade-up-left] {
+    transform: translate3d(20px, 20px, 0);
+}
+
+html:not(.no-js) [data-aos=fade-down-right] {
+    transform: translate3d(-20px, -20px, 0);
+}
+
+html:not(.no-js) [data-aos=fade-down-left] {
+    transform: translate3d(20px, -20px, 0);
+}
+
+html:not(.no-js) [data-aos=zoom-in] {
+    transform: scale(.9);
+}
+
+html:not(.no-js) [data-aos=zoom-in-up] {
+    transform: translate3d(0, 20px, 0) scale(.9);
+}
+
+html:not(.no-js) [data-aos=zoom-in-down] {
+    transform: translate3d(0, -20px, 0) scale(.9);
+}
+
+html:not(.no-js) [data-aos=zoom-in-right] {
+    transform: translate3d(-20px, 0, 0) scale(.9);
+}
+
+html:not(.no-js) [data-aos=zoom-in-left] {
+    transform: translate3d(20px, 0, 0) scale(.9);
+}
+
+html:not(.no-js) [data-aos=zoom-out] {
+    transform: scale(1.1);
+}

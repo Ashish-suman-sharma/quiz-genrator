@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InterviewPrep AI - Quiz Generator</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/quiz.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <img src="assets/logo.svg" alt="InterviewPrep AI Logo" />
+          <h1>Ashish AI</h1>
+        </div>
+        <ul class="nav-links"></ul>
+        <div class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section id="hero" data-aos="fade-up">
+        <div class="hero-content">
+          <h1>Master Your Technical Interviews</h1>
+          <p>
+            Generate AI-powered interview questions tailored to your needs.
+            Practice, learn, and improve with real-time feedback.
+          </p>
+          <button id="start-quiz" class="btn-primary">Generate New Quiz</button>
+        </div>
+        <div class="hero-image">
+          <div class="code-snippet">
+            <pre><code>function isPalindrome(str) {
+  const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return cleaned === cleaned.split('').reverse().join('');
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="quiz-settings" class="hidden">
+        <h2>Customize Your Quiz</h2>
+        <div class="settings-container">
+          <div class="setting-group">
+            <label for="topic-select">Choose Topics:</label>
+            <div class="topic-checkboxes">
+              <label
+                ><input type="checkbox" name="topic" value="dsa" /> Data
+                Structures & Algorithms</label
+              >
+              <label
+                ><input type="checkbox" name="topic" value="javascript" />
+                JavaScript</label
+              >
+              <label
+                ><input type="checkbox" name="topic" value="web" /> Web
+                Development</label
+              >
+              <label
+                ><input type="checkbox" name="topic" value="react" />
+                React</label
+              >
+              <label
+                ><input type="checkbox" name="topic" value="network" /> Computer
+                Networks</label
+              >
+              <label
+                ><input type="checkbox" name="topic" value="http" /> HTTP/HTTPS
+                Protocols</label
+              >
+            </div>
+            <input
+              type="text"
+              id="custom-topic"
+              class="custom-input"
+              placeholder="Custom Topic"
+            />
+          </div>
+          <div class="setting-group">
+            <label for="num-questions">Number of Questions:</label>
+            <select id="num-questions">
+              <option value="5">5 Questions</option>
+              <option value="10">10 Questions</option>
+              <option value="15">15 Questions</option>
+              <option value="20">20 Questions</option>
+              <option value="25" selected>25 Questions</option>
+              <option value="30">30 Questions</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label for="time-limit">Time Limit:</label>
+            <select id="time-limit">
+              <option value="5">5 Minutes</option>
+              <option value="10">10 Minutes</option>
+              <option value="15">15 Minutes</option>
+              <option value="20">20 Minutes</option>
+              <option value="30">30 Minutes</option>
+              <option value="45" selected>45 Minutes</option>
+              <option value="60">60 Minutes</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>Question Types:</label>
+            <div class="type-checkboxes">
+              <label
+                ><input type="checkbox" name="type" value="mcq" /> Multiple
+                Choice</label
+              >
+              <label
+                ><input type="checkbox" name="type" value="coding" />
+                Coding</label
+              >
+              <label
+                ><input type="checkbox" name="type" value="theory" />
+                Theory</label
+              >
+            </div>
+          </div>
+          <button id="generate-quiz" class="btn-primary">Generate Quiz</button>
+        </div>
+      </section>
+
+      <section id="quiz-container" class="hidden">
+        <div class="quiz-header">
+          <div class="quiz-info">
+            <h2 id="quiz-title">Interview Preparation Quiz</h2>
+            <p id="quiz-subtitle">
+              Time Remaining:
+              <span id="time-remaining">45:00</span>
+            </p>
+          </div>
+          <div class="progress-container">
+            <div id="quiz-progress" class="progress-bar">
+              <div class="progress-fill" style="width: 0%"></div>
+            </div>
+            <p>
+              <span id="current-question">0</span>/<span id="total-questions"
+                >25</span
+              >
+            </p>
+          </div>
+        </div>
+
+        <div id="question-container">
+          <!-- Questions will be dynamically inserted here -->
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Generating your quiz with Gemini AI...</p>
+          </div>
+        </div>
+
+        <div class="quiz-navigation">
+          <button id="prev-question" class="btn-secondary" disabled>
+            Previous
+          </button>
+          <button id="next-question" class="btn-primary" disabled>Next</button>
+          <button id="submit-quiz" class="btn-success hidden">
+            Submit Quiz
+          </button>
+        </div>
+      </section>
+
+      <section id="results-container" class="hidden">
+        <div class="results-header">
+          <h2>Quiz Results</h2>
+          <div class="score-circle">
+            <svg>
+              <circle cx="60" cy="60" r="54" class="score-background"></circle>
+              <circle cx="60" cy="60" r="54" class="score-circle-fill"></circle>
+            </svg>
+            <div class="score-text">
+              <span id="score-percentage">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-summary">
+          <div class="summary-item">
+            <span class="summary-label">Correct Answers:</span>
+            <span id="correct-answers" class="summary-value">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Incorrect Answers:</span>
+            <span id="incorrect-answers" class="summary-value">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Unanswered:</span>
+            <span id="unanswered" class="summary-value">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Time Spent:</span>
+            <span id="time-spent" class="summary-value">00:00</span>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button id="review-answers" class="btn-secondary">
+            Review Answers
+          </button>
+          <button id="new-quiz" class="btn-primary">Create New Quiz</button>
+        </div>
+
+        <div id="review-container" class="hidden">
+          <h3>Question Review</h3>
+          <div id="review-questions">
+            <!-- Review content will be inserted here -->
+          </div>
+        </div>
+      </section>
+
+      <section id="history" data-aos="fade-up">
+        <h2>Quiz History</h2>
+        <div id="history-container">
+          <p class="empty-history">
+            You haven't taken any quizzes yet. Generate your first quiz to get
+            started!
+          </p>
+          <!-- Quiz history will be dynamically inserted here -->
+        </div>
+      </section>
+    </main>
+
+    <!-- JavaScript Files -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script src="js/quiz-generator.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/quiz-ui.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
