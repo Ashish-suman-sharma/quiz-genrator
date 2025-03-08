@@ -135,7 +135,7 @@ class QuizUI {
             document.getElementById('question-container').innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Generating your quiz with Gemini AI...</p>
+                    <p>Generating your quiz ...</p>
                 </div>
             `;
             
@@ -538,7 +538,7 @@ class QuizUI {
             document.getElementById('question-container').innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Evaluating your answers with Gemini AI...</p>
+                    <p>Evaluating your answers ...</p>
                 </div>
             `;
             
@@ -750,7 +750,7 @@ class QuizUI {
                 document.getElementById('question-container').innerHTML = `
                     <div class="loading">
                         <div class="spinner"></div>
-                        <p>Generating a similar quiz with Gemini AI...</p>
+                        <p>Generating a similar quiz ...</p>
                     </div>
                 `;
                 
