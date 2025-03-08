@@ -1,6 +1,5 @@
 class GeminiAPI {
     constructor() {
-        this.apiKey = 'AIzaSyCjQoy70e_fnif3euN9wgBhJTcJJ2vrK-E'; // Initialize with the provided API key
         this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
         this.isConfigured = false;
     }
