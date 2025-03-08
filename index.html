@@ -241,14 +241,32 @@
         </div>
       </section>
 
-      <section id="history" data-aos="fade-up">
-        <h2>Quiz History</h2>
-        <div id="history-container">
-          <p class="empty-history">
-            You haven't taken any quizzes yet. Generate your first quiz to get
-            started!
-          </p>
-          <!-- Quiz history will be dynamically inserted here -->
+      <section id="progress-analysis" data-aos="fade-up">
+        <h2>Progress Analysis</h2>
+        <div class="progress-graph-container">
+          <canvas id="progress-chart"></canvas>
+        </div>
+        <div class="progress-metrics">
+          <div class="metric">
+            <span class="metric-value" id="avg-score">0%</span>
+            <span class="metric-label">Average Score</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value trend-indicator" id="score-trend">-</span>
+            <span class="metric-label">Score Trend</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value" id="completed-quizzes">0</span>
+            <span class="metric-label">Completed Quizzes</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value" id="highest-score">0%</span>
+            <span class="metric-label">Highest Score</span>
+          </div>
+        </div>
+        <div class="quick-actions">
+          <button id="create-new-quiz" class="btn-primary">Create New Quiz</button>
+          <button id="retry-last-quiz" class="btn-secondary">Retry Last Quiz</button>
         </div>
       </section>
     </main>
@@ -263,6 +281,7 @@
 
     <!-- JavaScript Files -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/gemini-api.js"></script>
     <script src="js/quiz-generator.js"></script>
     <script src="js/storage.js"></script>

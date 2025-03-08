@@ -22,6 +22,8 @@ class QuizUI {
         document.getElementById('submit-quiz').addEventListener('click', () => this.submitQuiz());
         document.getElementById('new-quiz').addEventListener('click', () => this.resetQuiz());
         document.getElementById('review-answers').addEventListener('click', () => this.toggleReviewSection());
+        document.getElementById('create-new-quiz').addEventListener('click', () => this.showQuizSettings());
+        document.getElementById('retry-last-quiz').addEventListener('click', () => this.retryLastQuiz());
         
         // Check if Gemini API is configured, if not, prompt the user
         if (!this.quizGenerator.geminiApi.loadSavedApiKey()) {
@@ -745,6 +747,7 @@ class QuizUI {
                 document.getElementById('hero').classList.add('hidden');
                 document.getElementById('quiz-settings').classList.add('hidden');
                 document.getElementById('results-container').classList.add('hidden');
+                document.getElementById('progress-analysis').classList.add('hidden');
                 document.getElementById('quiz-container').classList.remove('hidden');
                 
                 document.getElementById('question-container').innerHTML = `
@@ -772,6 +775,26 @@ class QuizUI {
                 // Go back to home screen
                 document.getElementById('quiz-container').classList.add('hidden');
                 document.getElementById('hero').classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Retry the last quiz in history
+         */
+        async retryLastQuiz() {
+            try {
+                const quizHistory = this.storage.getQuizHistory();
+                
+                if (quizHistory.length === 0) {
+                    alert('No previous quizzes found. Please create a new quiz first.');
+                    return;
+                }
+                
+                // Retry the most recent quiz (index 0)
+                await this.retryQuiz(0);
+            } catch (error) {
+                console.error('Error retrying last quiz:', error);
+                alert(`Failed to retry last quiz: ${error.message}`);
             }
         }
     }

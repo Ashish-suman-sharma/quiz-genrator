@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the UI components
     quizUI.init();
 
-    // Load quiz history on startup
-    loadQuizHistory();
+    // Load progress data on startup
+    loadProgressAnalysis();
 
     // Theme toggling
     const themeToggle = document.querySelector('.theme-toggle');
@@ -72,82 +72,159 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Load and display quiz history from local storage
+     * Load and display quiz progress analysis using chart.js
      */
-    function loadQuizHistory() {
-        const historyContainer = document.getElementById('history-container');
+    function loadProgressAnalysis() {
         const quizzes = storage.getQuizHistory();
+        const progressChart = document.getElementById('progress-chart');
         
-        if (quizzes.length === 0) {
-            return; // Default "empty history" message is already in the HTML
+        // Take only the last 20 quizzes, but reverse to show oldest to newest
+        const recentQuizzes = quizzes.slice(0, 20).reverse();
+        
+        if (recentQuizzes.length === 0) {
+            // Show empty state
+            document.getElementById('avg-score').textContent = '0%';
+            document.getElementById('score-trend').textContent = '-';
+            document.getElementById('completed-quizzes').textContent = '0';
+            document.getElementById('highest-score').textContent = '0%';
+            
+            // Empty chart with a message
+            new Chart(progressChart, {
+                type: 'line',
+                data: {
+                    labels: ['No Data'],
+                    datasets: [{
+                        label: 'Quiz Scores',
+                        data: [],
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Complete your first quiz to see progress',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Score Percentage'
+                            }
+                        }
+                    }
+                }
+            });
+            return;
         }
         
-        // Clear the empty history message
-        historyContainer.innerHTML = '';
+        // Calculate metrics
+        const scores = recentQuizzes.map(q => Math.round((q.score / q.totalQuestions) * 100));
+        const avgScore = scores.reduce((acc, score) => acc + score, 0) / scores.length;
+        const highestScore = Math.max(...scores);
         
-        // Add each quiz to the history section
-        quizzes.forEach((quiz, index) => {
-            const date = new Date(quiz.date);
-            const formattedDate = date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            const scorePercentage = Math.round((quiz.score / quiz.totalQuestions) * 100);
-            
-            const historyCard = document.createElement('div');
-            historyCard.className = 'history-card';
-            
-            let topicsHtml = '';
-            quiz.topics.forEach(topic => {
-                topicsHtml += `<span class="history-topic">${formatTopicName(topic)}</span>`;
-            });
-            
-            historyCard.innerHTML = `
-                <div class="history-date">${formattedDate}</div>
-                <div class="history-score">${scorePercentage}%</div>
-                <div>Score: ${quiz.score}/${quiz.totalQuestions}</div>
-                <div class="history-topics">
-                    ${topicsHtml}
-                </div>
-                <div class="history-actions">
-                    <button class="btn-secondary view-quiz" data-quiz-id="${index}">View</button>
-                    <button class="btn-primary retry-quiz" data-quiz-id="${index}">Retry Similar</button>
-                </div>
-            `;
-            
-            historyContainer.appendChild(historyCard);
+        // Determine trend (last 3 quizzes)
+        let trendElement = document.getElementById('score-trend');
+        if (scores.length >= 3) {
+            const lastThreeScores = scores.slice(-3);
+            if (lastThreeScores[2] > lastThreeScores[0]) {
+                trendElement.textContent = 'Improving';
+                trendElement.classList.add('up');
+            } else if (lastThreeScores[2] < lastThreeScores[0]) {
+                trendElement.textContent = 'Declining';
+                trendElement.classList.add('down');
+            } else {
+                trendElement.textContent = 'Steady';
+                trendElement.classList.add('steady');
+            }
+        } else {
+            trendElement.textContent = 'Insufficient Data';
+        }
+        
+        // Update metrics
+        document.getElementById('avg-score').textContent = `${Math.round(avgScore)}%`;
+        document.getElementById('completed-quizzes').textContent = recentQuizzes.length;
+        document.getElementById('highest-score').textContent = `${highestScore}%`;
+        
+        // Create labels for attempts (Attempt 1, Attempt 2, etc.)
+        const labels = recentQuizzes.map((_, index) => `Attempt ${index + 1}`);
+        
+        // Create the chart
+        new Chart(progressChart, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quiz Score',
+                    data: scores,
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: 'white',
+                    pointBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const quizIndex = context.dataIndex;
+                                const quiz = recentQuizzes[quizIndex];
+                                return [
+                                    `Score: ${quiz.score}/${quiz.totalQuestions}`,
+                                    `Topics: ${quiz.topics.join(', ')}`
+                                ];
+                            }
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Score Percentage'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Attempts'
+                        }
+                    }
+                }
+            }
         });
-        
-        // Add event listeners to the new buttons
-        document.querySelectorAll('.view-quiz').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const quizId = e.target.dataset.quizId;
-                quizUI.viewQuizFromHistory(quizId);
-            });
-        });
-        
-        document.querySelectorAll('.retry-quiz').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const quizId = e.target.dataset.quizId;
-                quizUI.retryQuiz(quizId);
-            });
-        });
-    }
-
-    /**
-     * Format topic name for display
-     * @param {string} topic - The topic identifier
-     * @returns {string} - Formatted topic name
-     */
-    function formatTopicName(topic) {
-        const topicMap = {
-            'dsa': 'DSA',
-            'javascript': 'JavaScript',
-            'web': 'Web Dev',
-            'react': 'React',
-            'network': 'Networks',
-            'http': 'HTTP/HTTPS'
-        };
-        
-        return topicMap[topic] || topic.charAt(0).toUpperCase() + topic.slice(1);
     }
 
     // Initialize the application
